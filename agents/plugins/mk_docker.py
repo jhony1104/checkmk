@@ -620,6 +620,23 @@ def section_container_diskstat(client, container_id):
     if stats is None:  # container not running
         return
     container_blkio = stats["blkio_stats"]
+
+    if container_blkio["io_service_bytes_recursive"] is None:
+        container_blkio["io_service_bytes_recursive"] = [
+            {
+                "major": 8,
+                "minor": 0,
+                "op": "read",
+                "value": 0
+            },
+            {
+                "major": 8,
+                "minor": 0,
+                "op": "write",
+                "value": 0
+            }
+        ]
+
     container_blkio["time"] = time.time()
     container_blkio["names"] = client.device_map()
     section = Section("docker_container_diskstat", piggytarget=container_id)
